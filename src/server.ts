@@ -40,7 +40,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
       <p>Welcome to Udagram ! </p>
       <hr>
       <small>Version: 1.0.0 </small>
-      <small>Author : Nehemie KOFFI </small>`
+      <small>Author : Nehemie KOFFI (CIV)</small>`
     )
   });
   
