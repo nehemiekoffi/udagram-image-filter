@@ -1,3 +1,4 @@
+import axios from "axios";
 import fs from "fs";
 import Jimp = require("jimp");
 
@@ -11,11 +12,12 @@ import Jimp = require("jimp");
 export async function filterImageFromURL(inputURL: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {
-      const photo = await Jimp.read(inputURL);
+      const imageBuffer = await getImageBuffer(inputURL);
+      const photo = await Jimp.read(imageBuffer);
       const outpath =
         "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
       await photo
-        .resize(256, 256) // resize
+        .resize(256, Jimp.AUTO) // resize while keeping image aspect ratio
         .quality(60) // set JPEG quality
         .greyscale() // set greyscale
         .write(__dirname + outpath, (img) => {
@@ -25,6 +27,17 @@ export async function filterImageFromURL(inputURL: string): Promise<string> {
       reject(error);
     }
   });
+}
+
+// getImageBuffer
+// helper function to get the image buffer
+ async function getImageBuffer(imageUrl: string) : Promise<any>{
+  let imageReponse = await axios({
+    method: 'get',
+    url: imageUrl,
+    responseType: 'arraybuffer'
+  });
+  return imageReponse.data;
 }
 
 // deleteLocalFiles
