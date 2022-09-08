@@ -1,1 +1,1 @@
-web: node ./src/server.ts
+web: npm run dev
