@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -16,20 +16,26 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
   // endpoint to filter an image from a public url.
-  app.get("/filteredimage", async(req, res) => {
-    let imageUrl = req.query.image_url;
-    // 1. validate the image_url query
-    if(imageUrl != null){     
-    // 2. call filterImageFromURL(image_url) to filter the image
-      let result = await filterImageFromURL(imageUrl);
-    // 3. send the resulting file in the response
-      res.sendFile(result, (err) => {
-        // 4. deletes any files on the server on finish of the response
-        deleteLocalFiles([result]);
-      });
-    }else{
-      res.send({status : "image_url is required"});
+  app.get("/filteredimage", async(req: Request, res: Response) => {
+    try {
+      let imageUrl:string = req.query.image_url;
+      // 1. validate the image_url query
+      if(imageUrl != null){     
+      // 2. call filterImageFromURL(image_url) to filter the image
+        let result: string = await filterImageFromURL(imageUrl);
+      // 3. send the resulting file in the response
+        res.sendFile(result, (err) => {
+          // 4. deletes any files on the server on finish of the response
+          deleteLocalFiles([result]);
+        });
+      }else{
+        res.status(422).send({code :res.statusCode, message: "`image_url` is required"});
+      }
+    } catch (error) {
+      console.log(error); // Log error
+      res.status(500).send({code: res.statusCode, message: 'An Error occurs, Kindly try later.'})
     }
+
   });
   
   // Root Endpoint
